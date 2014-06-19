@@ -10,15 +10,20 @@ Author: Vineet Kumar Srivastava
 
 #include "LinkedList.h"
 
+#define MAX_ELEMENTS_ALLOWED_IN_LIST 50
+
 /* Function for printing the Linked List */
 void printList(struct list* head)
 {
 	struct list* temp=head;
+	int count = 0;
+
 	printf("\n");
-	while(temp)
+	while((temp) && (count < MAX_ELEMENTS_ALLOWED_IN_LIST))
 	{
 		printf("  %d", temp->data);
 		temp=temp->next;
+		count++;
 	}
 }
 
@@ -219,6 +224,7 @@ void sortList(struct list **head, int order)
 void main()
 {
 	struct list *head= NULL,*temp=NULL;
+	struct list* nodeInLoop = 0;
 	char ans='\0';
 	int more=1,d=0,data=0,a=0,pos=0;
 	
@@ -269,7 +275,10 @@ void main()
 														  \n 8. For REVERSING the Linked List \
 														  \n 9. For Sorting the Linked list in Increasing Order \
 														  \n 10. For Sorting the Linked list in Decreasing order \
-														  \n 11. For finding the middle of linked list \n:");
+														  \n 11. For finding the middle of linked list \
+														  \n 12. To make a loop in linked list \
+														  \n 13. To detect loop in a linked list \
+														  \n 14. To remove the loop from a linked list\n:");
 			scanf("%d", &d);
 			switch(d)
 			{
@@ -343,6 +352,31 @@ void main()
 				printf("\n And the linked list is : ");
 				printList(head);
 				break;
+			case 12:
+				{
+					int data = 0;
+					printf("\nForming a loop in linked list\n");
+					printf("\n Enter the node data from where you want to start the loop in the list ");
+					scanf("%d", &data);
+
+					formLoopInList(head, data);
+				}
+				break;
+			case 13:
+				printf("\nDetecting loop in linked list\n");
+				detectLoopInList(head, &nodeInLoop);
+				printf("\n And the linked list is : ");
+				printList(head);
+				break;
+			case 14:
+				printf("\n Should be exercised only after executing option 13\n");
+				if(0 != nodeInLoop)
+				{
+					removeLoopFromList(head, nodeInLoop);
+				}
+				else
+					printf("\n Should be exercised only after executing option 13\n");
+				break;
 			default:
 				printf("\n You have not entered a valid choice \n");
 				break;
@@ -358,6 +392,8 @@ void main()
 	getche();
 }
 
+
+/* Function to find the middle of linked list */
 int findMiddleOfList(struct list** node)
 {
 	int num = -1;
@@ -395,3 +431,127 @@ int findMiddleOfList(struct list** node)
 
 	return num;
 }
+
+
+/* Function to detect a loop in a linked list */
+/* This function uses floyd's loop detection mechanism */
+int detectLoopInList(struct list* head, struct list** node)
+{
+	int iIsLoopPresent = 0;
+	struct list* slow_p = head;
+	struct list* fast_p = head;
+
+	/* Sanity check on the linked list */
+	if(0 == head)
+	{
+		printf("\n detectLoopInList: List is empty\n");
+		return iIsLoopPresent;
+	}
+
+	do
+	{
+		slow_p = slow_p->next;
+
+		if(fast_p->next)
+			fast_p = fast_p->next->next;
+	}while((slow_p != fast_p) && (0 != fast_p) && (0 != fast_p->next));
+
+	if((0 == fast_p) || (0 == fast_p->next))
+		printf("\n detectLoopInList: End of the List reached\n");
+	else
+	{
+		iIsLoopPresent = 1;
+		*node = slow_p;
+		printf("\n detectLoopInList: End of the List reached\n");
+	}
+
+	/* At the last check whether linked list has loop found or not */
+	if(1 == iIsLoopPresent)
+		printf("\n detectLoopInList: Loop detected in linked list \n");
+	else
+		printf("\n detectLoopInList: Loop NOT present in Linked list\n");
+
+	return iIsLoopPresent;
+}
+
+
+/* Function to form a loop in a linked list */
+int formLoopInList(struct list* head, int data)
+{
+	int ret_val = 0;
+	struct list* node = head;
+	struct list* temp = head;
+
+	/* Sanity check on node */
+	if(0 == head)
+	{
+		printf("\n formLoopInList: List provided is NULL\n");
+		return ret_val;
+	}
+
+	/* Get the node pointer which has to be the loop starting point */
+	while((node) && (data != node->data))
+		node = node->next;
+
+	/* Verify if we got the node */
+	if(0 == node)
+	{
+		printf("\n formLoopInList: Node not found\n");
+		return ret_val;
+	}
+
+
+	/* Traverse till the last of list and make it point to the desired node to make loop */
+	while(temp->next)
+		temp = temp->next;
+
+	/* Verify if by the given data loop can be made or not */
+	if(temp == node)
+	{
+		printf("\n formLoopInList: Loop cannot be made as last node was provided as the pivotal point\n");
+		return ret_val;
+	}
+
+	/* Form the loop */
+	temp->next = node;
+
+	return ret_val;
+}
+
+/* Function to remove a loop in a linked list */
+/* Function returns 1 if loop is removed else in all other cases returns 0 */
+int removeLoopFromList(struct list* head, struct list* node)
+{
+	int bRetval = 0, bHeadOfLoopFound = 0;
+	struct list* ptrInLoop = node;
+	struct list* ptrInList = head;
+
+	while((!bHeadOfLoopFound) && (ptrInList))
+	{
+		do
+		{
+			ptrInLoop = ptrInLoop->next;
+		}while((ptrInList != ptrInLoop->next) && (node != ptrInLoop) && (ptrInLoop));
+		
+		if(ptrInList != ptrInLoop->next)
+			ptrInList = ptrInList->next;
+		else
+			bHeadOfLoopFound = 1;
+
+		if(0 == ptrInLoop)
+		{
+			printf("\n removeLoopFromList: Loop doesnt exists\n");
+			break;
+		}
+	}
+
+	/* Break the loop */
+	if((bHeadOfLoopFound) && (ptrInLoop))
+	{
+		ptrInLoop->next = NULL;
+		bRetval = 1;
+	}
+
+	return bRetval;
+}
+/* End Of File */
