@@ -19,6 +19,16 @@ struct list
 	list* next;
 };
 
+/* Function to find the middle of linked list */
 int findMiddleOfList(struct list** node);
+
+/* Function to detect a loop in a linked list */
+int detectLoopInList(struct list* head, struct list** node);
+
+/* Function to form a loop in a linked list */
+int formLoopInList(struct list* head, int data);
+
+/* Function to remove a loop in a linked list */
+int removeLoopFromList(struct list* head, struct list* node);
 
 #endif 
