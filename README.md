@@ -2,6 +2,7 @@
 This project covers code for various data structure questions.
 
 It covers
+
 1. Searching: Linear and Binary, 
    - Linear search,
    - Binary search.
