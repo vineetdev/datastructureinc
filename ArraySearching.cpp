@@ -7,6 +7,7 @@ Date: 21st Febraury 2010
 */
 
 #include "ArraySearching.h"
+#include "HeapUtils.h"
 
 void main()
 {
@@ -36,6 +37,8 @@ void main()
 														  \n 5. For Custom Binary search \
 														  \n 6. Create a custom made Double dimensional Array \
 														  \n 7. Create a custom made Single dimensional Array \
+														  \n 8. Find second largest number in an array using Brute force \
+														  \n 9. Find second largest number in an array using Max Heap \
 														  \n\n Enter your option :");
 			scanf("%d", &d);
 			switch(d)
@@ -82,6 +85,14 @@ void main()
 			case 7:
 				printf("\n Making a custom made Single dimensional array ");
 				customMadeSingleDimensionalArray();
+				break;
+			case 8:
+				printf("\n Find the second largest number in the array Using Brute Force\n");
+				findSecondLargestNumInArrayUsingBruteForce(arr, count);
+				break;
+			case 9:
+				printf("\n Find the second largest number in the array Using Heap\n");
+				findSecondLargestNumInArrayUsingHeap(arr, count);
 				break;
 			default:
 				printf("\n You have not entered a valid choice \n");
@@ -355,4 +366,57 @@ void customMadeSingleDimensionalArray(void)
 	printf("\n");
 
 	return;
+}
+
+
+/* Find the second largest number in the array using brute force algorithm */
+int findSecondLargestNumInArrayUsingBruteForce(int* pArr, int len)
+{
+	int iSecondLargest = 0, iLargest = 0, idx = 0;
+
+	if(len < 2)
+	{
+		printf("\n findSecondLargestNumInArray: Array length passed is less than 2\n");
+		return iSecondLargest;
+	}
+
+	for(idx = 0; idx < len; idx++)
+	{
+		if(pArr[idx] > iLargest)
+		{
+			iSecondLargest = iLargest;
+			iLargest = pArr[idx];
+		}
+		else if(pArr[idx] > iSecondLargest)
+		{
+			iSecondLargest = pArr[idx];
+		}
+	}
+
+	printf("\n findSecondLargestNumInArray: Largest element is %d and second largest is %d\n", iLargest, iSecondLargest);
+	return iSecondLargest;
+}
+
+
+/* Find the second largest number in the array using HEAP */
+int findSecondLargestNumInArrayUsingHeap(int* pArr, int len)
+{
+	int iRet = 0, idx = 1;
+    
+    /* First build a heap out of the numbers in array */
+    for(idx = 1; idx < len; idx++)
+		addElementToHeap(pArr, idx, pArr[idx]);
+
+	/* Display the heap */
+	printHeap(pArr, len);
+
+	/* Delete the root node */
+	deleteElementFromHeap(pArr, &len, 0);
+
+	/* Display the heap */
+	printHeap(pArr, len);
+
+	/* Take out the root node it shall be the second largest number */
+	
+	return iRet;
 }
